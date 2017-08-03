@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="../js/lib/avalon.js"></script>
+</head>
+<body ms-controller="test">
+    <script>
+        var vm = avalon.define({
+            $id: "test",
+            name: "司徒正美",
+            array: [11,22,33],
+            testClick : function () {
+                this.toggle = true;
+                this.name = 'Lemon';
+            },
+            toggle : false,
+            doc : 'this is doc'
+        });
+        vm.me = 'zhanglinfeng'; //goole可以，ie不行，不支持window.
+        vm.array.push(44,55,66);
+        vm.array.pushArray([77,88]);
+        vm.array.removeAll(function (item, index) {
+            return (index < 5);
+        })
+        setTimeout(function(){
+            vm.array.set(0, 444)
+        }, 3000);
+        var watch = vm.$watch('name', function observe(a, b) {
+            
+        });
+
+
+        //
+        avalon.define({
+            $id: "AAA",
+            name: "liger",
+            color: "green"
+        });
+        avalon.define({
+            $id: "BBB",
+            name: "sphinx",
+            color: "red"
+        });
+        avalon.define({
+            $id: "CCC",
+            name: "dragon" //不存在color
+
+        });
+        avalon.define({
+            $id: "DDD",
+            name: "sirenia" //不存在color
+
+        });
+
+    </script>
+    <input ms-duplex="@name">
+    <p ms-click="@testClick">Hello,{{@name}}!</p>
+    <ul>
+        <li ms-for="($index,el) in @array">{{$index}}--{{el}}</li>
+    </ul>
+    <div ms-if="@toggle">{{@name}}</div> <!--插值表达式-->
+    <div ms-skip='true' >{{@doc}}</div> <!--跳过扫描原样输出-->
+    <div>{{@doc}}</div>
+
+    <!-- -->
+    <div ms-controller="AAA">
+        <div>{{@name}} : {{@color}}</div>
+        <div ms-controller="BBB">
+            <div>{{@name}} : {{@color}}</div>
+            <div ms-controller="CCC">  <!--找不到属性就近往上层寻找-->
+                <div>{{@name}} : {{@color}}</div>
+            </div>
+            <div ms-important="DDD"> <!--找不到属性就自己背锅-->
+                <div>{{@name}} : {{@color}}</div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
