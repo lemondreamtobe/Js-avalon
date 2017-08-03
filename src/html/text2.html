@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="../js/lib/avalon.js"></script>
+</head>
+<body>
+    <script>
+
+        //rules 只能用在ms-duplex指令的表单上
+        //此外要求验征框架能动起来，还必须在所有表单元素外包一个form元素，在form元素上加ms-validate指令。
+//        var vm = avalon.define({
+        //            $id: "validate1",
+        //            aaa: "",
+        //            bbb: '',
+        //            ccc: '',
+        //            validate: {
+        //                onError: function (reasons) {
+        //                    reasons.forEach(function (reason) {
+        //                        console.log(reason.getMessage())
+        //                    })
+        //                },
+        //                onValidateAll: function (reasons) {
+        //                    if (reasons.length) {
+        //                        console.log('有表单没有通过')
+        //                    } else {
+        //                        console.log('全部通过')
+        //                    }
+        //                }
+        //            }
+        //        });
+        var vm = avalon.define({
+            $id: "test",
+            action: '',
+            name: '',
+            email: '',
+            add: function(e) {
+                e.preventDefault()
+                this.action = "add.php";
+                this.validate.onManual();
+            },
+            update: function(e) {
+                e.preventDefault()
+                this.action = "update.php";
+                this.validate.onManual();
+            },
+            add2: function(e) {
+                e.preventDefault()
+                this.action = "add.php";
+                this.validate2.onManual();
+            },
+            update2: function(e) {
+                e.preventDefault()
+                this.action = "update.php";
+                this.validate2.onManual();
+            },
+            validate: {
+                name: 'validate1',
+                validateAllInSubmit: false,
+                onSuccess: function(reasons, event) {
+                    console.log('成功', reasons)
+                },
+                onError: function(reasons, event) {
+                    console.log('第1个表单没有通过验证 ', reasons.map(function(e) {
+                        return e.getMessage()
+                    }).join(' '))
+                },
+                onValidateAll: function(reasons) {
+
+                    var form = this
+                    if (reasons.length) {
+                        // 表单有错误
+                        console.log("第1个表单没有通过验证 ", reasons.map(function(e) {
+                            return e.getMessage()
+                        }).join(' '));
+                        return false;
+                    } else {
+                        // 验证成功
+                        // console.log(form) //在chrome控制台console面板勾选preserve log
+                        form.submit() //这里会发生跳转
+                    }
+                }
+            },
+            validate2: {
+                name: 'validate2',
+                validateAllInSubmit: false,
+                onSuccess: function(reasons, event) {
+                    console.log('成功', reasons)
+                },
+                onError: function(reasons, event) {
+                    console.log('第二个表单没有通过验证!', reasons.map(function(e) {
+                        return e.getMessage()
+                    }).join(' '))
+                },
+                onValidateAll: function(reasons) {
+
+                    var form = this
+                    if (reasons.length) {
+                        // 表单有错误
+                        console.log("第二个表单没有通过验证!", reasons.map(function(e) {
+                            return e.getMessage()
+                        }).join(' '));
+                        return false;
+                    } else {
+                        // 验证成功
+                        //console.log(form) //在chrome控制台console面板勾选preserve log
+                        form.submit() //这里会发生跳转
+                    }
+                }
+            }
+        })
+    </script>
+    <div ms-controller="validate1">
+        <form ms-validate="@validate">
+            <p><input ms-duplex="@aaa | change" placeholder="username"
+                      ms-rules='{required:true,chs:true}'
+                      data-required-message="请输入"
+                      data-email-message="请输入一个正确的邮箱" >{{@aaa}}</p>
+            <p><input type="password" id="pw" placeholder="password"
+                      ms-rules='{required:true}'
+                      ms-duplex="@bbb" /></p>
+            <p><input type="password"
+                      ms-rules="{required:true,equalto:'pw'}" placeholder="再填一次"
+                      ms-duplex="@ccc | change" /></p>
+            <p><input type="submit" value="submit"/></p>
+        </form>
+    </div>
+    <p>分隔</p>
+    <div ms-controller="test">
+        <form :validate="@validate" id="f1" :attr="{ action: @action }">
+            <input type="text" placeholder="input your name" :duplex="@name" :rules="{ required: true, number:true }" />
+            <input type="submit" value="新建用户" :click="@add" />
+            <input type="submit" value="修改用户" :click="@update" />
+        </form>
+        <form :validate="@validate2" id="f2" :attr="{ action: @action }">
+            <input type="text" placeholder="input your email" :duplex="@email" :rules="{ required: true, email:true }" />
+            <input type="submit" value="新建邮箱" :click="@add2" />
+            <input type="submit" value="修改邮箱" :click="@update2" />
+        </form>
+    </div>
+</body>
+</html>

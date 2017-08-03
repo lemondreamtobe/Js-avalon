@@ -53,7 +53,147 @@
             name: "sirenia" //不存在color
 
         });
+        //
 
+        //属性绑定
+        avalon.define({
+            $id: 'testAttr',
+            obj: {title: '普通 ', algin: 'left'},
+            active: {title: '激活'},
+            width: 111,
+            height: 222,
+            arr: [{img: 'aaa'}, {img: 'bbb'}, {img: 'ccc'},{img :　'ddd'}, {img : 'eee'}],
+            path: '../aaa/image.jpg',
+            toggle: false,
+            array: [{width: 1}, {height: 2}],
+            html : '<p> i am ready </p>',
+            className : 'a b vc',
+            className2 : ['e', 'f'],
+            toggle : false,
+            aaa : {},
+            show: function(aaa, bbb, ccc){
+                var obj = aaa[bbb]
+                if(obj){
+                    return obj[ccc]
+                }
+                return ''
+            },
+            fn : function (e) {
+                alert(e.type);
+                console.log(e.target);
+            }
+        });
+
+        //
+        var root = avalon.define({
+            $id: "fordux",
+            styles: {
+                width: 200,
+                height: 200,
+                borderWidth: 1,
+                borderColor: "red",
+                borderStyle: "solid",
+                backgroundColor: "gray"
+            },
+            field: "",
+            check: function(e) {
+                root.field = e.target.value + "  " + e.type
+            },
+            aaa: 'aaa',
+            bbb: 'bbb',
+            ccc: 'ccc',
+            ddd: '33',
+            eee: ['22'],
+            fff: false,
+            ggg: false,
+            fn : function () {
+                alert('hi');
+            }
+        });
+
+
+
+        //全选例子
+        var check = avalon.define({
+            $id: "checkcheck",
+            data: [{checked: false}, {checked: false}, {checked: false}],
+            allchecked: false,
+            checkAll: function (e) {
+                var checked = e.target.checked
+                check.data.forEach(function (el) {
+                    el.checked = checked
+                })
+            },
+            checkOne: function (e) {
+                var checked = e.target.checked
+                if (checked === false) {
+                    check.allchecked = false
+                } else {//avalon已经为数组添加了ecma262v5的一些新方法
+                    check.allchecked = check.data.every(function (el) {
+                        return el.checked
+                    })
+                }
+            }
+        });
+
+        //这是一个表格
+        if (!Date.now) {//fix 旧式IE
+            Date.now = function() {
+                return new Date - 0;
+            }
+        }
+        avalon.define({
+            $id: "table",
+            selected: "name",
+            options: ["name", "size", "date"],
+            trend: 1,
+            data: [
+                {name: "aaa", size: 213, date: Date.now() + 20},
+                {name: "bbb", size: 4576, date:Date.now() - 4},
+                {name: "ccc", size: 563, date: Date.now() - 7},
+                {name: "eee", size: 3713, date: Date.now() + 9},
+                {name: "555", size: 389, date: Date.now() - 20}
+            ],
+            optionsf: ["苹果", "香蕉", "桃子", "雪梨", "葡萄",
+                "哈蜜瓜", "橙子", "火龙果", "荔技", "黄皮"],
+            selecteda: "桃子"
+        })
+
+
+        //三级联动
+        var map = {
+            "中国": ["江南四大才子", "初唐四杰", "战国四君子"],
+            "日本": ["日本武将", "日本城堡", "幕府时代"],
+            "欧美": ["三大骑士团", "三大魔幻小说", "七大奇迹"],
+            "江南四大才子": ["祝枝山", "文征明", "唐伯虎", "周文宾"],
+            "初唐四杰": ["王勃", "杨炯", "卢照邻", "骆宾王"],
+            "战国四君子": ["楚国春申君黄歇", "齐国孟尝君田文", "赵国平原君赵胜", "魏国信陵君魏无忌"],
+            "日本武将": ["织田信长", "德川家康", "丰臣秀吉"],
+            "日本城堡": ["安土城", "熊本城", "大坂城", "姬路城"],
+            "幕府时代": ["镰仓", "室町", "丰臣", "江户"],
+            "三大骑士团": ["圣殿骑士团", "医院骑士团", "条顿骑士团"],
+            "三大魔幻小说": ["冰与火之歌", "时光之轮", "荆刺与白骨之王国"],
+            "七大奇迹": ["埃及胡夫金字塔", "奥林匹亚宙斯巨像", "阿尔忒弥斯月神殿", "摩索拉斯陵墓", "亚历山大港灯塔", "巴比伦空中花园", "罗德岛太阳神巨像"]
+        }
+        var sanji = avalon.define({
+            $id: 'linkage',
+            first: ["中国", "日本", "欧美"],
+            second: map['日本'].concat(),
+            third: map['日本武将'].concat(),
+            firstSelected: "日本",
+            secondSelected: "日本武将",
+            thirdSelected: "织田信长"
+        })
+
+
+        sanji.$watch("firstSelected", function (a) {
+            sanji.second = map[a].concat()
+            sanji.secondSelected = sanji.second[0]
+        })
+        sanji.$watch("secondSelected", function (a) {
+            sanji.third = map[a].concat()
+            sanji.thirdSelected = sanji.third[0]
+        })
     </script>
     <input ms-duplex="@name">
     <p ms-click="@testClick">Hello,{{@name}}!</p>
@@ -72,10 +212,118 @@
             <div ms-controller="CCC">  <!--找不到属性就近往上层寻找-->
                 <div>{{@name}} : {{@color}}</div>
             </div>
-            <div ms-important="DDD"> <!--找不到属性就自己背锅-->
+            <div ms-important="DDD"> <!--找不到属性就自己背锅只能用于ms-controller的元素里面-->
                 <div>{{@name}} : {{@color}}</div>
             </div>
         </div>
+    </div>
+    <!--双花乱码解决-->
+    <!--
+        .ms-controller{
+            visibility: hidden;
+        }
+     -->
+    <div ms-controller="testAttr">
+        <span ms-attr="@obj">直接引用对象{{@obj}}</span>
+        <img ms-attr="{src: @path}" />
+        <ul>
+            <li ms-for="el in @arr | limitBy(3) as items" data-for-rendered='@fn'><a ms-attr="{href:'http://www.ccc.xxx/ddd/'+ el.img}">下载</a></li> <!--循环绑定-->
+        </ul>
+        <span ms-attr="{width: @width, height: @height}">使用对象字面量</span><br/>
+        <span ms-css="{width: @width, height: @height}">使用对象字面量</span><br/> <!--样式绑定也差不多-->
+        <span ms-attr="@array">直接引用数组</span><br/> <!--不建议用直接数组的方式了, 下面也是一样的-->
+        <span ms-attr="[@obj, @toggle && @active ]" :click="@toggle = !@toggle">选择性添加多余属性或重写已有属性</span>
+        <div ms-html="@html" ms-class="[@className, @className2]"></div>
+        <div ms-css="{width: @width, height: @height}" ms-active="@className" ms-on-click="@toggle = !@toggle">Active</div>
+        <div ms-css="{width: @width, height: @height}" ms-hover="@className" ms-if="@toggle">Hover</div>
+        <div ms-css="{width: @width, height: @height}" ms-hover="@className" ms-if="@aaa.bbb">{{@show(@aaa,'bbb','ccc')}}</div>
+        <div ms-visible="@toggle">{{@height}}</div>
+    </div>
+
+    <div ms-controller="fordux" ms-css="{width:@styles[width], heigth: @styles[height]}">
+        <div ms-for="(key,el) in @styles">
+            <label>{{ key }}::{{ el }}</label>
+            <input type="text" ms-duplex="@styles[key]" >
+            <!--不能ms-duplex="el"-->
+        </div>
+        <input ms-on-input="@check"/>{{@field}}
+        <input ms-duplex="@aaa | change">{{@aaa}}
+        <input ms-duplex="@bbb" type="password">{{@bbb}}
+        <textarea ms-duplex="@ccc" /></textarea>{{@ccc}}
+        <input type="radio" value="11"  ms-duplex="@ddd"/>
+        <input type="radio" value="22"  ms-duplex="@ddd"/>
+        <input type="radio" value="33"  ms-duplex="@ddd"/>
+        <input type="checkbox" value="11"  ms-duplex="@eee"/>
+        <input type="checkbox" value="22"  ms-duplex="@eee"/>
+        <input type="checkbox" value="33"  ms-duplex="@eee"/>
+        <p>radio: {{@ddd}}; checkbox:{{@eee}}</p>
+        <input type="radio"  ms-duplex-checked="@fff"/>
+        <input type="checkbox"  ms-duplex-checked="@ggg"/>
+        <p>radio: {{@fff}}; checkbox:{{@ggg}}</p>
+        <select :duplex="@aaa"><option>aaa</option><option>bbb</option><option>ccc</option></select>
+        <select multiple="true" :duplex="@eee"><option>aaa</option><option>bbb</option><option>ccc</option></select>
+        <input value="11"  ms-duplex="@aaa | uppercase" data-duplex-changed="@fn"> <!--数据格式化是由过滤器实现的,如可能导致死循环, 因此建议放在事件回调中实现-->
+
+        <!--数据验证这必须在所有表单元素的上方form元素加上ms-validate指令, 当前元素加上ms-rules才会生效-->
+        <form ms-validate="@validation">
+            <input ms-duplex='@aaa'
+                   ms-rules='require,email,maxlength'
+                   data-maxlength='4'
+                   data-maxlength-message='太长了' >
+        </form>
+    </div>
+    <table ms-controller="checkcheck" border="1">
+        <tr>
+            <td><input type="checkbox"
+                       ms-duplex-checked="@allchecked"
+                       data-duplex-changed="@checkAll"/>全选</td>
+        </tr>
+        <tr ms-for="($index, el) in @data">
+            <td><input type="checkbox" ms-duplex-checked="el.checked" data-duplex-changed="@checkOne" />{{$index}}::{{el.checked}}</td>
+        </tr>
+    </table>
+
+    <div ms-controller="table">
+        <div style="color:red">
+            <p>本例子用于显示如何做一个简单的表格排序</p>
+        </div>
+        <p>
+            <select ms-duplex="@selected">
+                <option  ms-for="el in @options">{{el}}</option>
+            </select>
+            <select ms-duplex-number="@trend">
+                <option value="1">up</option>
+                <option value="-1">down</option>
+            </select>
+        </p>
+        <table width="500px" border="1">
+            <tbody >
+            <tr ms-for="el in @data | orderBy(@selected, @trend)">
+                <td>{{el.name}}</td> <td>{{el.size}}</td> <td>{{el.date}}</td>
+            </tr>
+            </tbody>
+        </table>
+        <h3>文本域与下拉框的联动</h3>
+        <input  ms-duplex="@selecteda" />
+        <select ms-duplex="@selecteda" >
+            <option ms-for="el in @optionsf" ms-attr="{value: el}" >
+                {{el}}
+            </option>
+        </select>
+    </div>
+
+    <!--三级联动-->
+    <div ms-controller="linkage">
+        <h3>下拉框三级联动</h3>
+        <select ms-duplex="@firstSelected" >
+            <option  ms-for="el in @first" ms-attr="{value:el}" >{{el}}</option>
+        </select>
+        <select ms-duplex="@secondSelected" >
+            <option  ms-for="el in @second" ms-attr="{value:el}" >{{el}}</option>
+        </select>
+        <select ms-duplex="@thirdSelected" >
+            <option  ms-for="el in @third" ms-attr="{value:el}" >{{el}}</option>
+        </select>
     </div>
 </body>
 </html>
