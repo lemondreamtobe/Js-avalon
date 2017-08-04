@@ -20,7 +20,7 @@
         });
         vm.me = 'zhanglinfeng'; //goole可以，ie不行，不支持window.
         vm.array.push(44,55,66);
-        vm.array.pushArray([77,88]);
+        vm.array.pushArray([77,88]); //推荐用法
         vm.array.removeAll(function (item, index) {
             return (index < 5);
         })

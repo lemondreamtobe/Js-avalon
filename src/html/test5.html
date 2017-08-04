@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="../js/lib/avalon.js"></script>
+</head>
+<body>
+    <script>
+        avalon.define({
+            $id: "test",
+            xxx: "引入内部模板"
+        });
+        avalon.define({
+            $id: "simple",
+            firstName: "司徒",
+            lastName: "正美",
+            array: ["aaa", "bbb", "ccc"],
+            argsClick: function(e, a, b) {
+                alert(a+ "  "+b)
+            },
+            loopClick: function(a) {
+                alert(a)
+            }
+        });
+    </script>
+    <script type="avalon" id="tpl">
+        here, {{ 3 + 6 * 5  }}
+    </script>
+    <div ms-controller="test">
+        <p>{{xxx}}</p>
+        <div ms-include="'tpl'"></div>
+    </div>
+    <fieldset ms-controller="simple">
+        <legend>例子</legend>
+        <div ms-click="argsClick($event, 100, firstName)">点我</div>
+    </fieldset>
+</body>
+</html>
